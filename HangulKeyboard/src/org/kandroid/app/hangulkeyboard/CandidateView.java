@@ -25,6 +25,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -244,32 +245,35 @@ public class CandidateView extends View {
 		invalidate();
 	}
 	
+	private CandidateGenerator.OnPostListener l = new CandidateGenerator.OnPostListener() {
+		
+		@Override
+		public void onPostExcute(List<String> res, boolean valid) {
+			
+			synchronized (this) {
+				
+				mSuggestions = res;
+	
+				mTypedWordValid = valid;
+				scrollTo(0, 0);
+				mTargetScrollX = 0;
+				// Compute the total width
+				onDrawCandidate(null);
+				invalidate();
+				requestLayout();
+			}
+		}
+	};
+	
+	boolean generating = false;
+	
 	public void setSuggestions(List<String> suggestions, boolean completions,
 			boolean typedWordValid) {
+
 		clear();
+		
 		if (suggestions != null)
-			mSuggestions = getSuggestions(suggestions);
-
-		mTypedWordValid = typedWordValid;
-		scrollTo(0, 0);
-		mTargetScrollX = 0;
-		// Compute the total width
-		onDrawCandidate(null);
-		invalidate();
-		requestLayout();
-	}
-
-	private ArrayList<String> getSuggestions (List<String> sugs) {
-		
-		ArrayList<String> rtn = new ArrayList<String>();
-		
-		rtn.add(sugs.get(0) + "1");
-		rtn.add(sugs.get(0) + "2");
-		rtn.add(sugs.get(0) + "3");
-		rtn.add(sugs.get(0) + "4");
-		rtn.add(sugs.get(0) + "5");
-		
-		return rtn;
+			new CandidateGenerator (suggestions, typedWordValid, l).execute();
 	}
 	
 	public int getSuggestionLength () {

@@ -661,6 +661,7 @@ public class SoftKeyboard extends InputMethodService
 	
 	private void handleBackspace() {
 		final int length = mComposing.length();
+		Log.d ("Movie", "handleBackspace");
 		if (length > 1) {
 			mComposing.delete(length - 1, length);
 			getCurrentInputConnection().setComposingText(mComposing, 1);
@@ -899,11 +900,12 @@ public class SoftKeyboard extends InputMethodService
 				clearHangul();				
 			}
 			else if (newHangulChar == -2) {
-				int hangulKeyIdx;
-				int cho_idx,jung_idx,jong_idx;
+//				int hangulKeyIdx;
+//				int cho_idx,jung_idx,jong_idx;
 
-				 Log.i("Hangul", "HCURSOR_NONE [DEL -2]");
-				
+				Log.i("Hangul", "HCURSOR_NONE [DEL -2]");
+				handleBackspace();
+/*
 				switch(mHangulState) {
 				case H_STATE_0:
 					keyDownUp(KeyEvent.KEYCODE_DEL);
@@ -976,7 +978,7 @@ public class SoftKeyboard extends InputMethodService
 					hangulSendKey(newHangulChar,HCURSOR_UPDATE);
 					mHangulState = H_STATE_5;
 					break;
-				}
+				}*/
 			}
 			else if (newHangulChar == -3) {
 				 Log.i("Hangul", "HCURSOR_NONE [DEL -3]");				
